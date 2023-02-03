@@ -16,10 +16,7 @@ const Signin=()=>{
 const login=()=>{
 axios.post("http://localhost:5000/login",user).then(res=>{
     alert(res.data.message)
-    if(res.data.message==="login succesfull"){
         window.location.replace("/join");
-    }else{
-        window.location.replace("/")
     }
         
    
