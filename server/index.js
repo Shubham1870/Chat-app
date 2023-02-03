@@ -54,51 +54,49 @@ const Userschema = new mongoose.Schema({
 })
 const user = mongoose.model("user", Userschema)
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
     const {email,password}=req.body
-    user.findOne({email:email},(err,data)=>{
-        if(data){
-            if(password===data.password){
+    try {
+        const foundUser = await user.findOne({email:email});
+        if(foundUser){
+            if(password===foundUser.password){
                 res.send({
-                    message:"login succesfull",data:data
+                    message:"login successful",data:foundUser
                 })
-            }else{
+            } else {
                 res.send({
                     message:"password not match"
                 })
             }
-        }else{
+        } else {
             res.send({
                 message:"user not found"
             })
         }
-        
-    })
-  }
-)
-app.post("/register", (req, res) => {
+    } catch (err) {
+        res.send(err);
+    }
+});
+
+app.post("/register", async (req, res) => {
     const {username,email,password}=req.body
-    user.findOne({email:email},(err,data)=>{
-        if(data){
+    try {
+        const existingUser = await user.findOne({email:email});
+        if(existingUser){
             res.send({message:"User already registered"})
-        }else{
-            const data=new user({
+        } else {
+            const newUser = new user({
                 username,
                 email,
                 password
             })
-            data.save(err=>{
-                if(err){
-                    res.send(err)
-                }else{
-                    res.send({message:"Successfully registed"})
-                }
-            })
-
-            
+            await newUser.save();
+            res.send({message:"Successfully registered"})
         }
-    })
-  }
-)
+    } catch (err) {
+        res.send(err);
+    }
+});
+
 app.use(router)
 server.listen(PORT,()=>console.log("server is up"))
