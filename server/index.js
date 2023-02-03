@@ -10,6 +10,17 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 app.use(express.json())
+
+mongoose.connect("mongodb://127.0.0.1:27017/mylogin",
+  { useNewUrlParser: true, useUnifiedTopology: true }, () => { console.log("database connected") }
+)
+const Userschema = new mongoose.Schema({
+  username:{type:String},
+  email: {type:String},
+  password: {type:String}
+})
+const user = mongoose.model("user", Userschema)
+
 const {addup,getuser} =require("./users.js")
 const server=http.createServer(app)
 const io = require('socket.io')(server, {
@@ -44,15 +55,7 @@ socket.on('disconnect',()=>{
 })
 })
 
-mongoose.connect("mongodb://127.0.0.1:27017/mylogin",
-  { useNewUrlParser: true, useUnifiedTopology: true }, () => { console.log("database connected") }
-)
-const Userschema = new mongoose.Schema({
-  username:{type:String},
-  email: {type:String},
-  password: {type:String}
-})
-const user = mongoose.model("user", Userschema)
+
 
 app.post("/login", (req, res) => {
     const {email,password}=req.body
