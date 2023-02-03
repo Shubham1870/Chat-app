@@ -1,0 +1,51 @@
+:root{
+    font-family: 'Montserrat', sans-serif;
+}
+body{
+    background: linear-gradient(110deg, #fdcd3b 60%, #ffed4b 60%);
+    font-weight: 900;
+    
+}
+#signup-container{
+background-color: azure;
+ margin:14em auto;
+ width: 30vw;
+ height: 45vh;
+ text-align: center;
+ padding: 3em;
+}
+#signup-container>div{
+    margin-bottom: .7em;
+}
+
+#username{
+margin-right: 2.2em;
+}
+#email{
+
+}
+#password{
+    margin-right: 2.3em;
+}
+#confirm{
+    margin-right: 6.2em;
+}
+#signup-button{
+    border-radius: .3em;
+    border: .1em solid grey;
+    padding: .6em;
+    width: 5em;
+   
+   margin-top: .4em;
+    font-size: .9em;
+
+}
+#signin-button{
+    border-radius: .3em;
+    border: .1em solid grey;
+    margin-top: .1em;
+    padding: .6em;
+    width: 5em;
+    font-size: .9em;
+    margin-left: .1em;
+}
