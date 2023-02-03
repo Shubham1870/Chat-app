@@ -11,7 +11,7 @@ const Chat = ({ location }) => {
   const [room, setRoom] = useState("")
   const [message, setMessage] = useState("")
   const [messages, setmessages] = useState([])
-  const URL = 'localhost:5000'
+  const URL = 'https://chat-app-050m.onrender.com'
   useEffect(() => {
     const { username, room } = queryString.parse(location.search)
     socket = io(URL)
