@@ -9,7 +9,7 @@ const cors = require('cors')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
-
+app.use(express.json())
 const {addup,getuser} =require("./users.js")
 const server=http.createServer(app)
 const io = require('socket.io')(server, {
@@ -48,55 +48,58 @@ mongoose.connect("mongodb://127.0.0.1:27017/mylogin",
   { useNewUrlParser: true, useUnifiedTopology: true }, () => { console.log("database connected") }
 )
 const Userschema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String
+  username:{type:String},
+  email: {type:String},
+  password: {type:String}
 })
 const user = mongoose.model("user", Userschema)
 
-app.post("/login", async (req, res) => {
+app.post("/login", (req, res) => {
     const {email,password}=req.body
-    try {
-        const foundUser = await user.findOne({email:email});
-        if(foundUser){
-            if(password===foundUser.password){
+    user.findOne({email:email},(err,data)=>{
+        if(data){
+            if(password===data.password){
                 res.send({
-                    message:"login successful",data:foundUser
+                    message:"login succesfull",data:data
                 })
-            } else {
+            }else{
                 res.send({
                     message:"password not match"
                 })
             }
-        } else {
+        }else{
             res.send({
                 message:"user not found"
             })
         }
-    } catch (err) {
-        res.send(err);
-    }
-});
-
-app.post("/register", async (req, res) => {
+        
+    })
+  }
+)
+app.post("/register", (req, res) => {
     const {username,email,password}=req.body
-    try {
-        const existingUser = await user.findOne({email:email});
-        if(existingUser){
+    user.findOne({email:email},(err,data)=>{
+        if(data){
             res.send({message:"User already registered"})
-        } else {
-            const newUser = new user({
+        }else{
+            const data=new user({
                 username,
                 email,
                 password
             })
-            await newUser.save();
-            res.send({message:"Successfully registered"})
+            data.save(err=>{
+                if(err){
+                    res.send(err)
+                }else{
+                    res.send({message:"Successfully registed"})
+                }
+            })
+
+            
         }
-    } catch (err) {
-        res.send(err);
-    }
-});
+    })
+  }
+)
 
 app.use(router)
 server.listen(PORT,()=>console.log("server is up"))
