@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 
-const {addup,deleteuser,getuser,userroom} =require("./users.js")
+const {addup,getuser} =require("./users.js")
 const server=http.createServer(app)
 const io = require('socket.io')(server, {
     cors: {
