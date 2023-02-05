@@ -4,6 +4,7 @@
 body{
     background: linear-gradient(110deg, #fdcd3b 60%, #ffed4b 60%);
     font-weight: 900;
+ 
     
 }
 #signup-container{
@@ -13,23 +14,19 @@ background-color: azure;
  height: 45vh;
  text-align: center;
  padding: 3em;
+
 }
 #signup-container>div{
     margin-bottom: .7em;
 }
-
-#username{
-margin-right: 2.2em;
+#password{
+    margin-right: .5em;
 }
 #email{
+margin-top: .7em;
+margin-bottom: .7em;
+}
 
-}
-#password{
-    margin-right: 2.3em;
-}
-#confirm{
-    margin-right: 6.2em;
-}
 #signup-button{
     border-radius: .3em;
     border: .1em solid grey;

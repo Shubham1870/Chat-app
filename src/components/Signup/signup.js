@@ -1,58 +1,59 @@
-import { useState } from "react"
-import axios from "axios"
-import { Link } from "react-router-dom"
+import React, { useState } from 'react';
+import { Link,  useNavigate } from 'react-router-dom';
 import "./signup.css"
-const Signup=()=>{
-    const[user,setuser]=useState({
-        username:"",
-        email:"",
-        password:"",
-        confirmpassword:""
-    })
-    
+const SignUp = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
 
-    const handlechange=e=>{
-const {name,value}=e.target
-setuser({...user,[name]:value})
+  const navigate=useNavigate()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:5000/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, username }),
+      });
+      const data = await response.json();
+      console.log(data.message);
+     navigate("/login")
+    } catch (error) {
+      console.error(error);
     }
-    const register=()=>{
-        const {username,email,password,confirmpassword}=user
-        if(username&&email&&password&&(password===confirmpassword)){
-            axios.post("http://localhost:5000/register",user)
-            .then(res=>{
-                alert(res.data.message)
-            })
-        }else{
-            alert("Invalid input")
-        }
-        
-    }
-    return (
-        <>
-            <section id="signup-container">
-                <h1>Sign Up</h1>
-                <div id="username">  <label>Username:  </label>
-                <input type="text" placeholder="Username" name="username"  value={user.username}
-                onChange={handlechange}/></div>
-                <div id="email"> <label>Email:  </label>
-                <input type="text" placeholder="E-mail" name="email"  value={user.email} onChange={handlechange}
-                /></div>
-                <div id="password"><label>Password:  </label>
-                <input type="password" placeholder="Password" name="password"  value={user.password}
-                onChange={handlechange}/></div>
-                <div id="confirm"><label> Confirm Password:  </label>
-                <input type="password" placeholder="Confirm-Password" name="confirmpassword"  value={user.confirmpassword}
-                onChange={handlechange}/></div>
-                <button id="signup-button" onClick={register} >Sign Up</button>
-                <p>Have an account?</p>
+  };
+
+  return (
+    <>
+    <section id="signup-container">
+    <h1>Sign Up</h1>
+    <div id='username'><input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      /></div>
+    <form onSubmit={handleSubmit}>
+    <div id='email'><input
+        type="text"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      /></div>
+    <div id='password'><input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      /></div>
+  
+      <button id="signup-button" type="submit">Sign Up</button>
+    </form>
+    <p>Have an account?</p>
             <Link to={"/login"}> <button  id="signin-button"  >Sign In</button></Link>
-            </section>
-            
-      
-          
-        
-           
-        </>
-    )
-}
-export default Signup
+    </section>
+    </>
+  );
+};
+
+export default SignUp;
