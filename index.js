@@ -4,11 +4,22 @@ const app=express()
 const router=require("./router")
 const bodyParser = require('body-parser')
 const mongoose = require("mongoose")
+const bcrypt = require('bcrypt');
 const cors = require('cors')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
+app.use(express.json()) 
+const users=[]
+mongoose.connect("mongodb+srv://root:aashiana@4516@cluster0.sdwf5gn.mongodb.net/?retryWrites=true&w=majority",
+  { useNewUrlParser: true, useUnifiedTopology: true }, () => { console.log("database connected") }
+)
+const Userschema = new mongoose.Schema({
+  username:{type:String},
+  email: {type:String},
+  password: {type:String}
+})
 
 const {addup,getuser} =require("./users.js")
 const server=http.createServer(app)
@@ -44,61 +55,53 @@ socket.on('disconnect',()=>{
 })
 })
 
-mongoose.connect("mongodb://127.0.0.1:27017/mylogin",
-  { useNewUrlParser: true, useUnifiedTopology: true }, () => { console.log("database connected") }
-)
-const Userschema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String
-})
+
 const user = mongoose.model("user", Userschema)
 
-app.post("/login", (req, res) => {
-    const {email,password}=req.body
-    user.findOne({email:email},(err,data)=>{
-        if(data){
-            if(password===data.password){
-                res.send({
-                    message:"login succesfull",data:data
-                })
-            }else{
-                res.send({
-                    message:"password not match"
-                })
-            }
-        }else{
-            res.send({
-                message:"user not found"
-            })
-        }
-        
-    })
-  }
-)
-app.post("/register", (req, res) => {
-    const {username,email,password}=req.body
-    user.findOne({email:email},(err,data)=>{
-        if(data){
-            res.send({message:"User already registered"})
-        }else{
-            const data=new user({
-                username,
-                email,
-                password
-            })
-            data.save(err=>{
-                if(err){
-                    res.send(err)
-                }else{
-                    res.send({message:"Successfully registed"})
-                }
-            })
-
-            
-        }
-    })
-  }
-)
+app.post('/signup', async (req, res) => {
+    try {
+      const { email, password, username } = req.body;
+      
+      
+      const emailExists = users.some((user) => user.email === email);
+      if (emailExists) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
+  
+      
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+     
+      const user = { email, password: hashedPassword, username };
+      users.push(user);
+  
+      res.status(201).json({ message: 'Sign up successful' });
+    } catch (error) {
+      res.status(500).json({ message: 'Sign up failed' });
+    }
+  });
+  
+  app.post('/signin', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      // Look up the user in the database
+      const user = users.find((user) => user.email === email);
+      if (!user) {
+        return res.status(400).json({ message: 'Email or password is incorrect' });
+      }
+  
+      // Check if the password is correct
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Email or password is incorrect' });
+      }
+  
+      res.json({ message: 'Sign in successful' });
+    } catch (error) {
+      res.status(500).json({ message: 'Sign in failed' });
+    }
+  });
+  
 app.use(router)
 server.listen(PORT,()=>console.log("server is up"))
